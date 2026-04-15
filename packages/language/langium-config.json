@@ -1,0 +1,16 @@
+{
+    "projectName": "HearthstoneBattlegroundsDsl",
+    "languages": [
+        {
+            "id": "hearthstone-battlegrounds-dsl",
+            "grammar": "src/hearthstone-battlegrounds-dsl.langium",
+            "fileExtensions": [
+                "hsbg"
+            ],
+            "textMate": {
+                "out": "syntaxes/hearthstone-battlegrounds-dsl.tmLanguage.json"
+            }
+        }
+    ],
+    "out": "src/generated"
+}
