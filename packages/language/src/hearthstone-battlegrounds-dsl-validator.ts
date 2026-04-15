@@ -1,5 +1,5 @@
 import type { ValidationAcceptor, ValidationChecks } from 'langium';
-import type { HearthstoneBattlegroundsDslAstType, Person } from './generated/ast.js';
+import type { HearthstoneBattlegroundsDslAstType, Minion } from './generated/ast.js';
 import type { HearthstoneBattlegroundsDslServices } from './hearthstone-battlegrounds-dsl-module.js';
 
 /**
@@ -9,7 +9,7 @@ export function registerValidationChecks(services: HearthstoneBattlegroundsDslSe
     const registry = services.validation.ValidationRegistry;
     const validator = services.validation.HearthstoneBattlegroundsDslValidator;
     const checks: ValidationChecks<HearthstoneBattlegroundsDslAstType> = {
-        Person: validator.checkPersonStartsWithCapital
+        Minion: validator.checkMinionTierRange
     };
     registry.register(checks, validator);
 }
@@ -19,12 +19,9 @@ export function registerValidationChecks(services: HearthstoneBattlegroundsDslSe
  */
 export class HearthstoneBattlegroundsDslValidator {
 
-    checkPersonStartsWithCapital(person: Person, accept: ValidationAcceptor): void {
-        if (person.name) {
-            const firstChar = person.name.substring(0, 1);
-            if (firstChar.toUpperCase() !== firstChar) {
-                accept('warning', 'Person name should start with a capital.', { node: person, property: 'name' });
-            }
+    checkMinionTierRange(minion: Minion, accept: ValidationAcceptor): void {
+        if (minion.tier < 1 || minion.tier > 6) {
+            accept('error', 'Tier must be between 1 and 6.', { node: minion, property: 'tier' });
         }
     }
 

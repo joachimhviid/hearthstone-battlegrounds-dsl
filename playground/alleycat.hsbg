@@ -1,2 +1,8 @@
-person Alice
-Hello Alice!
+Tribe BEAST
+
+Minion AlleyCat {
+  name "Alley Cat"
+  tier 1
+  attack 1
+  health 1
+}
