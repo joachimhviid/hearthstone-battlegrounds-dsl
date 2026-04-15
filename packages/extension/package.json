@@ -11,17 +11,26 @@
         "Programming Languages"
     ],
     "contributes": {
-        "languages": [{
-            "id": "hearthstone-battlegrounds-dsl",
-            "aliases": ["Hearthstone Battlegrounds DSL", "hearthstone-battlegrounds-dsl"],
-            "extensions": [".hsbg"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "hearthstone-battlegrounds-dsl",
-            "scopeName": "source.hearthstone-battlegrounds-dsl",
-            "path": "syntaxes/hearthstone-battlegrounds-dsl.tmLanguage.json"
-        }]
+        "languages": [
+            {
+                "id": "hearthstone-battlegrounds-dsl",
+                "aliases": [
+                    "Hearthstone Battlegrounds DSL",
+                    "hearthstone-battlegrounds-dsl"
+                ],
+                "extensions": [
+                    ".hsbg"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "hearthstone-battlegrounds-dsl",
+                "scopeName": "source.hearthstone-battlegrounds-dsl",
+                "path": "syntaxes/hearthstone-battlegrounds-dsl.tmLanguage.json"
+            }
+        ]
     },
     "activationEvents": [
         "onLanguage:hearthstone-battlegrounds-dsl"
@@ -29,14 +38,14 @@
     "main": "./out/extension/main.cjs",
     "scripts": {
         "clean": "shx rm -fr *.tsbuildinfo out syntaxes",
-        "vscode:prepublish": "npm run build",
+        "vscode:prepublish": "pnpm run build",
         "build:prepare": "shx mkdir -p ./syntaxes/ && shx cp -f ../language/syntaxes/hearthstone-battlegrounds-dsl.tmLanguage.json ./syntaxes/hearthstone-battlegrounds-dsl.tmLanguage.json",
-        "build": "npm run build:prepare && tsc -b tsconfig.json && node esbuild.mjs",
-        "build:clean": "npm run clean && npm run build",
-        "watch": "npm run build:prepare && concurrently -n tsc,esbuild -c blue,yellow \"tsc -b tsconfig.json --watch\" \"node esbuild.mjs --watch\""
+        "build": "pnpm run build:prepare && tsc -b tsconfig.json && node esbuild.mjs",
+        "build:clean": "pnpm run clean && pnpm run build",
+        "watch": "pnpm run build:prepare && concurrently -n tsc,esbuild -c blue,yellow \"tsc -b tsconfig.json --watch\" \"node esbuild.mjs --watch\""
     },
     "dependencies": {
-        "hearthstone-battlegrounds-dsl-language": "0.0.1",
+        "hearthstone-battlegrounds-dsl-language": "link:..\\language",
         "vscode-languageclient": "~9.0.1",
         "vscode-languageserver": "~9.0.1"
     },
@@ -46,6 +55,6 @@
         "esbuild": "~0.25.5"
     },
     "vsce": {
-      "dependencies": false
+        "dependencies": false
     }
 }

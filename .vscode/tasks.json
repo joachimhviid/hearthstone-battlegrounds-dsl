@@ -5,7 +5,7 @@
     "tasks": [
         {
             "label": "Build hearthstone-battlegrounds-dsl",
-            "command": "npm run langium:generate && npm run build",
+            "command": "pnpm run langium:generate; if ($LASTEXITCODE -eq 0) { pnpm run build }",
             "type": "shell",
             "group": {
                 "kind": "build",
