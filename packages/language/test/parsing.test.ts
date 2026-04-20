@@ -1,9 +1,8 @@
-import { beforeAll, describe, /*expect,*/ test } from "vitest";
+import { beforeAll, describe, expect, test } from "vitest";
 import { EmptyFileSystem, type LangiumDocument } from "langium";
-// import { expandToString as s } from "langium/generate";
 import { parseHelper } from "langium/test";
 import type { Model } from "hearthstone-battlegrounds-dsl-language";
-import { createHearthstoneBattlegroundsDslServices/*, isModel*/ } from "hearthstone-battlegrounds-dsl-language";
+import { createHearthstoneBattlegroundsDslServices, isModel } from "hearthstone-battlegrounds-dsl-language";
 
 let services: ReturnType<typeof createHearthstoneBattlegroundsDslServices>;
 let parse:    ReturnType<typeof parseHelper<Model>>;
@@ -19,43 +18,32 @@ beforeAll(async () => {
 
 describe('Parsing tests', () => {
 
-    test('parse simple Model', async () => {
+    test('parse minion with numeric tier', async () => {
         document = await parse(`
-            person Langium
-            Hello Langium!
+                        Beast
+
+            Minion AlleyCat {
+              name "Alley Cat"
+              tier 1
+              attack 1
+              health 1
+            }
         `);
-        console.log(document)
 
-        // check for absence of parser errors the classic way:
-        //  deactivated, find a much more human readable way below!
-        // expect(document.parseResult.parserErrors).toHaveLength(0);
-
-        // expect(
-        //     // here we use a (tagged) template expression to create a human readable representation
-        //     //  of the AST part we are interested in and that is to be compared to our expectation;
-        //     // prior to the tagged template expression we check for validity of the parsed document object
-        //     //  by means of the reusable function 'checkDocumentValid()' to sort out (critical) typos first;
-        //     checkDocumentValid(document) || s`
-        //         Persons:
-        //           ${document.parseResult.value?.persons?.map(p => p.name)?.join('\n  ')}
-        //         Greetings to:
-        //           ${document.parseResult.value?.greetings?.map(g => g.person.$refText)?.join('\n  ')}
-        //     `
-        // ).toBe(s`
-        //     Persons:
-        //       Langium
-        //     Greetings to:
-        //       Langium
-        // `);
+        expect(checkDocumentValid(document)).toBeUndefined();
+        expect(document.parseResult.value?.minions[0]).toMatchObject({
+            name: 'AlleyCat',
+            minionName: 'Alley Cat',
+            tier: 1,
+            attack: 1,
+            health: 1
+        });
     });
 });
 
-// function checkDocumentValid(document: LangiumDocument): string | undefined {
-//     return document.parseResult.parserErrors.length && s`
-//         Parser errors:
-//           ${document.parseResult.parserErrors.map(e => e.message).join('\n  ')}
-//     `
-//         || document.parseResult.value === undefined && `ParseResult is 'undefined'.`
-//         || !isModel(document.parseResult.value) && `Root AST object is a ${document.parseResult.value.$type}, expected a 'Model'.`
-//         || undefined;
-// }
+function checkDocumentValid(document: LangiumDocument): string | undefined {
+    return document.parseResult.parserErrors.length && `Parser errors:\n  ${document.parseResult.parserErrors.map(e => e.message).join('\n  ')}`
+        || document.parseResult.value === undefined && `ParseResult is 'undefined'.`
+        || !isModel(document.parseResult.value) && `Root AST object is a ${document.parseResult.value.$type}, expected a 'Model'.`
+        || undefined;
+}

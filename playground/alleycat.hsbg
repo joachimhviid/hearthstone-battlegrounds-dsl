@@ -1,8 +1,16 @@
-Tribe BEAST
-
 Minion AlleyCat {
   name "Alley Cat"
   tier 1
   attack 1
   health 1
+  tribes Beast
+  Battlecry summon TabbyCat
+}
+
+Minion token TabbyCat {
+  name "Tabby Cat"
+  tier 1
+  attack 1
+  health 1
+  tribes Beast
 }

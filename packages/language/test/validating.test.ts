@@ -21,31 +21,36 @@ beforeAll(async () => {
 
 describe('Validating', () => {
 
-    test('check no errors', async () => {
+    test('accepts a valid tier range', async () => {
         document = await parse(`
-            person Langium
+            Minion AlleyCat {
+              name "Alley Cat"
+              tier 1
+              attack 1
+              health 1
+            }
         `);
 
         expect(
-            // here we first check for validity of the parsed document object by means of the reusable function
-            //  'checkDocumentValid()' to sort out (critical) typos first,
-            // and then evaluate the diagnostics by converting them into human readable strings;
-            // note that 'toHaveLength()' works for arrays and strings alike ;-)
             checkDocumentValid(document) || document?.diagnostics?.map(diagnosticToString)?.join('\n')
         ).toHaveLength(0);
     });
 
-    test('check capital letter validation', async () => {
+    test('rejects tiers outside 1 to 6', async () => {
         document = await parse(`
-            person langium
+            Minion AlleyCat {
+              name "Alley Cat"
+              tier 7
+              attack 1
+              health 1
+            }
         `);
 
         expect(
             checkDocumentValid(document) || document?.diagnostics?.map(diagnosticToString)?.join('\n')
         ).toEqual(
-            // 'expect.stringContaining()' makes our test robust against future additions of further validation rules
             expect.stringContaining(s`
-                [1:19..1:26]: Person name should start with a capital.
+                [3:19..3:20]: Tier must be between 1 and 6.
             `)
         );
     });
