@@ -20,10 +20,6 @@ Effect:
 Trigger:
     SimpleTrigger | EventTrigger;
 
-// this (current minion instance), you (player)
-TriggerSource:
-    'Source' name=ID;
-
 // After <this | you | (x <allegiance> minions y)>, Whenever <this | you | (x <allegiance> minions y)>, TavernIsRefreshed
 EventTrigger:
     time=('Whenever' | 'After') condition=Condition;
@@ -32,6 +28,7 @@ EventTrigger:
 SimpleTrigger:
     type=('Battlecry' | 'Deathrattle' | 'Rally' | 'StartOfTurn' | 'EndOfTurn' | 'StartOfCombat');
 
+// TODO: flesh out this to be useful
 Condition:
     description=STRING;
 
