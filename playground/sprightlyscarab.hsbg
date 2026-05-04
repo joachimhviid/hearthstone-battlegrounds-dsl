@@ -1,0 +1,8 @@
+Minion SprightlyScarab {
+  name "Sprightly Scarab"
+  tier 3
+  attack 3
+  health 1
+  tribes Beast
+  Battlecry give a friendly Beast (+1/+1, Reborn, Windfury)
+}

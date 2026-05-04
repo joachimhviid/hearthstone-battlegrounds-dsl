@@ -33,13 +33,19 @@ Condition:
     description=STRING;
 
 Action:
-    GainStatAction | GiveStatAction | SummonAction | DamageAction;
+    GainStatAction | GrantAttributeAction | SummonAction | DamageAction;
 
 GainStatAction:
     'gain' StatModification;
 
-GiveStatAction:
-    'give' StatModification;
+KeywordModification:
+    keyword=Keyword;
+
+AttributeModification:
+    StatModification | KeywordModification;
+
+GrantAttributeAction:
+    'give' target=Target '(' modifications+=AttributeModification (',' modifications+=AttributeModification)* ')';
 
 SummonAction:
     'summon' (amount=INT)? minion=[Minion];
@@ -51,10 +57,13 @@ StatModification:
     '+' attack=INT '/' '+' health=INT;
 
 Owner returns string:
-    'your' | 'tavern';
+    'tavern' | 'friendly' | 'enemy';
 
-Target returns string:
-    Owner Tribe's' | 'this';
+Quantifier:
+    'a' | 'all' (excludeSelf?='other')?;
+
+Target:
+    'this' | quantifier=Quantifier (owner=Owner)? (tribe=Tribe)?;
 
 Minion:
     'Minion' (token?='token')? name=ID '{'

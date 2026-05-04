@@ -77,6 +77,50 @@ describe('Parsing tests', () => {
             })
         })
     })
+
+    test('parse GrantAttributeAction with stat and keyword modifications', async () => {
+        document = await parse(`
+            Minion AlleyCat {
+                name "Alley Cat"
+                tier 1
+                attack 1
+                health 1
+                tribes Beast
+                Battlecry give a friendly Beast (+1/+1, Reborn)
+            }
+        `);
+
+        expect(checkDocumentValid(document)).toBeUndefined();
+        const effect = document.parseResult.value?.minions[0].effects[0];
+        expect(effect).toBeDefined();
+        expect(effect?.actions.length).toBe(1);
+        const action = effect?.actions[0];
+        expect(action?.$type).toBe('GrantAttributeAction');
+        if (action?.$type === 'GrantAttributeAction') {
+            expect(action.modifications.length).toBe(2);
+            expect(action.modifications[0].$type).toBe('StatModification');
+            expect(action.modifications[1].$type).toBe('KeywordModification');
+        }
+    })
+
+    test('parse SprightlyScarab with formatted code', async () => {
+        document = await parse(`
+Minion SprightlyScarab {
+  name "Sprightly Scarab"
+  tier 3
+  attack 3
+  health 1
+  tribes Beast
+  Battlecry give a friendly Beast (+1/+1, Reborn)
+}
+        `);
+
+        const errors = checkDocumentValid(document);
+        if (errors) {
+            console.log('Parse errors:', errors);
+        }
+        expect(errors).toBeUndefined();
+    })
 });
 
 function checkDocumentValid(document: LangiumDocument): string | undefined {
