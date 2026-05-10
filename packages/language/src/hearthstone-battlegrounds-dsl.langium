@@ -33,15 +33,22 @@ Condition:
     PlayerActionCondition | MinionActionCondition;
 
 PlayerActionCondition:
-    PlayerPlayCondition;
-
-MinionActionCondition:;
+    PlayerPlayCondition | PlayerTriggerKeywordCondition;
 
 PlayerPlayCondition:
-    'you' action=('play' | 'cast' | 'summon' | 'overflow') subject=CardSelector;
-    // 'a' minionType=('minion' | Tribe) 'is' summonType=('played' | 'summoned');
+    'you' action=('play' | 'cast' | 'summon' | 'overflow') subject=Target;
 
-CardSelector:;
+PlayerTriggerKeywordCondition:
+    'you trigger a' keyword=Keyword;
+
+MinionActionCondition:
+    MinionDamageCondition | MinionStatGainCondition;
+
+MinionDamageCondition:
+    subject=Target 'takes' 'damage';
+
+MinionStatGainCondition:
+    subject=Target 'gains' stat=('attack' | 'health');
 
 Action:
     GainStatAction | GrantAttributeAction | SummonAction | DamageAction;
@@ -71,10 +78,10 @@ Owner returns string:
     'tavern' | 'friendly' | 'enemy';
 
 Quantifier:
-    'a' | 'all' (excludeSelf?='other')?;
+    one?=('a' | 'an') | all?='all' (excludeSelf?='other')? | another?='another';
 
 Target:
-    'this' | quantifier=Quantifier (owner=Owner)? (tribe=Tribe)?;
+    'this' | quantifier=Quantifier (owner=Owner)? (tribe=Tribe)? (keyword=Keyword)?;
 
 Minion:
     'Minion' (token?='token')? name=ID '{'
