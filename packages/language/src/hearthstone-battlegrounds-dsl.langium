@@ -28,9 +28,20 @@ EventTrigger:
 SimpleTrigger:
     type=('Battlecry' | 'Deathrattle' | 'Rally' | 'StartOfTurn' | 'EndOfTurn' | 'StartOfCombat');
 
-// TODO: flesh out this to be useful
+// minion (of tribe) played
 Condition:
-    description=STRING;
+    PlayerActionCondition | MinionActionCondition;
+
+PlayerActionCondition:
+    PlayerPlayCondition;
+
+MinionActionCondition:;
+
+PlayerPlayCondition:
+    'you' action=('play' | 'cast' | 'summon' | 'overflow') subject=CardSelector;
+    // 'a' minionType=('minion' | Tribe) 'is' summonType=('played' | 'summoned');
+
+CardSelector:;
 
 Action:
     GainStatAction | GrantAttributeAction | SummonAction | DamageAction;
