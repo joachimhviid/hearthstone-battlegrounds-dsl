@@ -4,6 +4,10 @@ import { readdir } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
 import { spawnSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const cliPath = path.resolve(__dirname, '../packages/cli/bin/cli.js')
 
 const playgroundDir = path.resolve('playground')
 const destinationDir = path.join(playgroundDir, 'generated')
@@ -20,7 +24,7 @@ if (sourceFiles.length === 0) {
 }
 
 for (const sourceFile of sourceFiles) {
-    const result = spawnSync('hsbg-cli', ['generate', sourceFile, '--destination', destinationDir], {
+    const result = spawnSync('node', [cliPath, 'generate', sourceFile, '--destination', destinationDir], {
         stdio: 'inherit'
     })
 
