@@ -3,7 +3,19 @@ grammar HearthstoneBattlegroundsDsl
 entry Model:
     (minions+=Minion)*;
 
-// All, Beast, Demon, Dragon, Elemental, Mech, Murloc, Naga, Pirate, Quilboar, Undead
+// -------------------------------- BASE
+
+Minion:
+    'Minion' (token?='token')? name=ID '{'
+        'name' minionName=STRING
+        'tier' tier=INT
+        'attack' attack=INT
+        'health' health=INT
+        ('tribes' tribes+=Tribe)?
+        (keywords+=Keyword)*
+        (effects+=Effect)*
+    '}';
+
 // Validate 'All' is always alone (not combined with other tribes)
 Tribe returns string:
     'All' | 'Beast' | 'Demon' | 'Dragon' | 'Elemental' | 'Mech' | 'Murloc' | 'Naga' | 'Pirate' | 'Quilboar' | 'Undead';
@@ -12,49 +24,60 @@ Tribe returns string:
 Keyword returns string:
     'Taunt' | 'Reborn' | 'DivineShield' | 'Stealth' | 'Windfury' | 'Venomous';
 
+// -------------------------------- EFFECTS & TRIGGERS
 
 Effect:
-    trigger=Trigger actions+=Action ('and' actions+=Action)*;
+    trigger=Trigger actions+=Action ('and' actions+=Action)* (modifier=Modifier)?;
 
+Modifier returns string:
+    'permanently' | 'this combat' | 'this game' | 'this turn' | 'until next turn';
 
 Trigger:
     SimpleTrigger | EventTrigger;
 
-// After <this | you | (x <allegiance> minions y)>, Whenever <this | you | (x <allegiance> minions y)>, TavernIsRefreshed
 EventTrigger:
     time=('Whenever' | 'After') condition=Condition;
 
-// EndOfTurn, StartOfTurn, StartOfCombat
 SimpleTrigger:
-    type=('Battlecry' | 'Deathrattle' | 'Rally' | 'StartOfTurn' | 'EndOfTurn' | 'StartOfCombat');
+    type=('Battlecry' | 'Deathrattle' | 'Rally' | 'Start of Turn' | 'End of Turn' | 'Start of Combat');
 
-// minion (of tribe) played
+
+// -------------------------------- CONDITIONS
+
 Condition:
     PlayerActionCondition | MinionActionCondition;
 
 PlayerActionCondition:
-    PlayerPlayCondition | PlayerTriggerKeywordCondition;
+    PlayerPlayCondition | PlayerTriggerKeywordCondition | PlayerSellCondition;
 
 PlayerPlayCondition:
-    'you' action=('play' | 'cast' | 'summon' | 'overflow') subject=Target;
+    'you' action=('play' | 'cast' | 'summon' | 'overflow') target=Target;
 
 PlayerTriggerKeywordCondition:
     'you trigger a' keyword=Keyword;
+
+PlayerSellCondition:
+    'you sell' target=Target;
 
 MinionActionCondition:
     MinionDamageCondition | MinionStatGainCondition;
 
 MinionDamageCondition:
-    subject=Target 'takes' 'damage';
+    target=Target 'takes damage';
 
 MinionStatGainCondition:
-    subject=Target 'gains' stat=('attack' | 'health');
+    target=Target 'gains' stat=('attack' | 'health');
+
+// -------------------------------- ACTIONS
 
 Action:
-    GainStatAction | GrantAttributeAction | SummonAction | DamageAction;
+    GainStatAction | GrantAttributeAction | SummonAction | DamageAction | GetMinionAction;
 
 GainStatAction:
     'gain' StatModification;
+
+GetMinionAction:
+    'get' amount=INT (random?='random')? subject=Target;
 
 KeywordModification:
     keyword=Keyword;
@@ -69,30 +92,30 @@ SummonAction:
     'summon' (amount=INT)? minion=[Minion];
 
 DamageAction:
-    'deal' amount=INT 'damage' 'to' target=Target;
+    'deal' amount=INT 'damage to' target=Target;
 
 StatModification:
     '+' attack=INT '/' '+' health=INT;
 
-Owner returns string:
+
+// -------------------------------- SELECTORS
+
+Affiliation returns string:
     'tavern' | 'friendly' | 'enemy';
 
-Quantifier:
+TargetQuantifier:
     one?=('a' | 'an') | all?='all' (excludeSelf?='other')? | another?='another';
 
 Target:
-    'this' | quantifier=Quantifier (owner=Owner)? (tribe=Tribe)? (keyword=Keyword)?;
+    ExplicitTarget | DynamicTarget;
+    // 'this' | (quantifier=TargetQuantifier)? (affiliation=Affiliation)? (tribe=Tribe)? (keyword=Keyword)?;
 
-Minion:
-    'Minion' (token?='token')? name=ID '{'
-        'name' minionName=STRING
-        'tier' tier=INT
-        'attack' attack=INT
-        'health' health=INT
-        ('tribes' tribes+=Tribe)?
-        (keywords+=Keyword)*
-        (effects+=Effect)*
-    '}';
+ExplicitTarget:
+    'this' | 'it' | (affiliation=Affiliation)? target=('minion' | Tribe);
+
+DynamicTarget:
+    quantifier=TargetQuantifier (affiliation=Affiliation)? target=('minion' | Tribe);
+
 
 hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;

@@ -1,0 +1,8 @@
+Minion Tad {
+  name "Tad"
+  tier 2
+  attack 2
+  health 2
+  tribes Murloc
+  Whenever you sell this
+}
