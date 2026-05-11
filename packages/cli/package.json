@@ -23,6 +23,7 @@
     "dependencies": {
         "chalk": "~5.3.0",
         "commander": "~11.1.0",
-        "hearthstone-battlegrounds-dsl-language": "link:..\\language"
+        "hearthstone-battlegrounds-dsl-language": "link:..\\language",
+        "langium": "4.2.3"
     }
 }

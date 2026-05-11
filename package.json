@@ -12,10 +12,11 @@
         "langium:generate": "pnpm --filter hearthstone-battlegrounds-dsl-language langium:generate",
         "langium:watch": "pnpm --filter hearthstone-battlegrounds-dsl-language langium:watch",
         "test": "pnpm --filter hearthstone-battlegrounds-dsl-language test",
-        "playground:generate": "hsbg-cli generate"
+        "playground:generate": "node ./scripts/generate-playground.mjs"
     },
     "devDependencies": {
         "@types/node": "~20.17.48",
+        "hearthstone-battlegrounds-dsl-cli": "workspace:*",
         "shx": "~0.4.0",
         "typescript": "~5.8.3"
     },

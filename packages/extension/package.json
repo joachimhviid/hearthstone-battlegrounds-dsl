@@ -46,6 +46,7 @@
     },
     "dependencies": {
         "hearthstone-battlegrounds-dsl-language": "link:..\\language",
+        "langium": "4.2.3",
         "vscode-languageclient": "~9.0.1",
         "vscode-languageserver": "~9.0.1"
     },

@@ -80,7 +80,7 @@ function generateCardDescription(minion: Minion): string {
         } else {
             cardAttributes.push(effect.trigger.time)
             // TODO: flesh this out
-            cardAttributes.push(effect.trigger.condition.description)
+            // cardAttributes.push(effect.trigger.condition.description)
         }
         effect.actions.map((action) => {
             switch (action.$type) {
