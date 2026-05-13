@@ -105,21 +105,41 @@ describe('Parsing tests', () => {
 
     test('parse SprightlyScarab with formatted code', async () => {
         document = await parse(`
-Minion SprightlyScarab {
-  name "Sprightly Scarab"
-  tier 3
-  attack 3
-  health 1
-  tribes Beast
-  Battlecry give a friendly Beast (+1/+1, Reborn)
-}
+            Minion SprightlyScarab {
+                name "Sprightly Scarab"
+                tier 3
+                attack 3
+                health 1
+                tribes Beast
+                Battlecry give a friendly Beast (+1/+1, Reborn)
+            }
         `);
 
-        const errors = checkDocumentValid(document);
+        const errors = checkDocumentValid(document)
         if (errors) {
-            console.log('Parse errors:', errors);
+            console.log('Parse errors:', errors)
         }
-        expect(errors).toBeUndefined();
+        expect(errors).toBeUndefined()
+    })
+
+    test('parse Tad', async () => {
+        document = await parse(`
+            Minion Tad {
+                name "Tad"
+                tier 2
+                attack 2
+                health 2
+                tribes Murloc
+                Whenever you sell this get 1 random Murloc
+            }
+        `)
+
+        const errors = checkDocumentValid(document)
+        // console.log(document.parseResult.value.minions[0].effects[0].trigger.condition)
+        if (errors) {
+            console.log('Parse errors:', errors)
+        }
+        expect(errors).toBeUndefined()
     })
 });
 

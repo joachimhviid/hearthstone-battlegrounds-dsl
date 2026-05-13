@@ -11,14 +11,18 @@ Minion:
         'tier' tier=INT
         'attack' attack=INT
         'health' health=INT
-        ('tribes' tribes+=Tribe)?
+        ('tribes' tribes+=Tribe (',' tribes+=Tribe)*)?
         (keywords+=Keyword)*
         (effects+=Effect)*
     '}';
 
 // Validate 'All' is always alone (not combined with other tribes)
 Tribe returns string:
-    'All' | 'Beast' | 'Demon' | 'Dragon' | 'Elemental' | 'Mech' | 'Murloc' | 'Naga' | 'Pirate' | 'Quilboar' | 'Undead';
+    'All' | 'Beast' | 'Demon' | 'Dragon' | 'Elemental' | 'Mech' | 'Murloc' | 
+    'Naga' | 'Pirate' | 'Quilboar' | 'Undead' | TribePlural;
+
+TribePlural returns string:
+    'Beasts' | 'Demons' | 'Dragons' | 'Elementals' | 'Mechs' | 'Murlocs' | 'Nagas' | 'Pirates' | 'Quilboars' | 'Undeads';
 
 // Divine Shield, Reborn, Stealth, Taunt, Venomous, or Windfury
 Keyword returns string:
@@ -39,7 +43,10 @@ EventTrigger:
     time=('Whenever' | 'After') condition=Condition;
 
 SimpleTrigger:
-    type=('Battlecry' | 'Deathrattle' | 'Rally' | 'Start of Turn' | 'End of Turn' | 'Start of Combat');
+    type=(KeywordTrigger | 'Start of Turn' | 'End of Turn' | 'Start of Combat');
+
+KeywordTrigger returns string:
+    'Battlecry' | 'Deathrattle' | 'Rally';
 
 
 // -------------------------------- CONDITIONS
@@ -54,7 +61,7 @@ PlayerPlayCondition:
     'you' action=('play' | 'cast' | 'summon' | 'overflow') target=Target;
 
 PlayerTriggerKeywordCondition:
-    'you trigger a' keyword=Keyword;
+    'you trigger a' keyword=KeywordTrigger;
 
 PlayerSellCondition:
     'you sell' target=Target;
@@ -107,14 +114,25 @@ TargetQuantifier:
     one?=('a' | 'an') | all?='all' (excludeSelf?='other')? | another?='another';
 
 Target:
-    ExplicitTarget | DynamicTarget;
-    // 'this' | (quantifier=TargetQuantifier)? (affiliation=Affiliation)? (tribe=Tribe)? (keyword=Keyword)?;
+    (quantifier=TargetQuantifier)?
+    (affiliation=Affiliation)?
+    (tierFilter=TierFilter)?
+    type=('this' | 'it' | 'minion' | Tribe)
+    (keywordFilter=KeywordFilter)?;
+// ExplicitTarget | DynamicTarget;
+// 'this' | (quantifier=TargetQuantifier)? (affiliation=Affiliation)? (tribe=Tribe)? (keyword=Keyword)?;
 
-ExplicitTarget:
-    'this' | 'it' | (affiliation=Affiliation)? target=('minion' | Tribe);
+// ExplicitTarget:
+//     'this' | 'it' | (affiliation=Affiliation)? target=('minion' | Tribe);
 
-DynamicTarget:
-    quantifier=TargetQuantifier (affiliation=Affiliation)? target=('minion' | Tribe);
+// DynamicTarget:
+//     quantifier=TargetQuantifier (affiliation=Affiliation)? target=('minion' | Tribe);
+
+TierFilter:
+    'tier' tier=INT;
+
+KeywordFilter:
+    'with' keyword=Keyword;
 
 
 hidden terminal WS: /\s+/;

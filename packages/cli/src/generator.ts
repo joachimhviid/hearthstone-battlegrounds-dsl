@@ -65,13 +65,13 @@ function generateCardDescription(minion: Minion): string {
                 case 'Rally':
                     cardAttributes.push(`${effect.trigger.type}:`)
                     break;
-                case 'StartOfCombat':
+                case 'Start of Combat':
                     cardAttributes.push('Start of Combat:')
                     break
-                case 'EndOfTurn':
+                case 'End of Turn':
                     cardAttributes.push('At the end of your turn,')
                     break
-                case 'StartOfTurn':
+                case 'Start of Turn':
                     cardAttributes.push('At the start of your turn,')
                     break
                 default:

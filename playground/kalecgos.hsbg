@@ -1,0 +1,8 @@
+Minion Kalecgos {
+  name "Kalecgos"
+  tier 5
+  attack 4
+  health 12
+  tribes Dragon
+  Whenever you trigger a Battlecry give friendly Dragons (+2/+2)
+}
