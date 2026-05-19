@@ -14,21 +14,21 @@ const destinationDir = path.join(playgroundDir, 'generated')
 
 const entries = await readdir(playgroundDir, { withFileTypes: true })
 const sourceFiles = entries
-    .filter((entry) => entry.isFile() && entry.name.endsWith('.hsbg'))
-    .map((entry) => path.join(playgroundDir, entry.name))
-    .sort()
+  .filter((entry) => entry.isFile() && entry.name.endsWith('.hsbg'))
+  .map((entry) => path.join(playgroundDir, entry.name))
+  .sort()
 
 if (sourceFiles.length === 0) {
-    console.error(`No .hsbg files found in ${playgroundDir}`)
-    process.exit(1)
+  console.error(`No .hsbg files found in ${playgroundDir}`)
+  process.exit(1)
 }
 
 for (const sourceFile of sourceFiles) {
-    const result = spawnSync('node', [cliPath, 'generate', sourceFile, '--destination', destinationDir], {
-        stdio: 'inherit'
-    })
+  const result = spawnSync('node', [cliPath, 'generate', sourceFile, '--destination', destinationDir], {
+    stdio: 'inherit',
+  })
 
-    if (result.status !== 0) {
-        process.exit(result.status ?? 1)
-    }
+  if (result.status !== 0) {
+    process.exit(result.status ?? 1)
+  }
 }

@@ -1,25 +1,25 @@
 {
-    "name": "hearthstone-battlegrounds-dsl-workspace",
-    "description": "Base workspace package",
-    "version": "0.0.1",
-    "type": "module",
-    "private": true,
-    "scripts": {
-        "clean": "shx rm -fr *.tsbuildinfo && pnpm -r run clean",
-        "watch": "tsc -b tsconfig.build.json --watch",
-        "build": "tsc -b tsconfig.build.json && pnpm -r run build",
-        "build:clean": "pnpm run clean && pnpm run build",
-        "langium:generate": "pnpm --filter hearthstone-battlegrounds-dsl-language langium:generate",
-        "langium:watch": "pnpm --filter hearthstone-battlegrounds-dsl-language langium:watch",
-        "test": "pnpm --filter hearthstone-battlegrounds-dsl-language test",
-        "playground:generate": "node ./scripts/generate-playground.mjs"
-    },
-    "devDependencies": {
-        "@types/node": "~20.17.48",
-        "hearthstone-battlegrounds-dsl-cli": "workspace:*",
-        "prettier": "3.8.3",
-        "shx": "~0.4.0",
-        "typescript": "~5.8.3"
-    },
-    "packageManager": "pnpm@10.28.2+sha512.41872f037ad22f7348e3b1debbaf7e867cfd448f2726d9cf74c08f19507c31d2c8e7a11525b983febc2df640b5438dee6023ebb1f84ed43cc2d654d2bc326264"
+  "name": "hearthstone-battlegrounds-dsl-workspace",
+  "description": "Base workspace package",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "clean": "shx rm -fr *.tsbuildinfo && pnpm -r run clean",
+    "watch": "tsc -b tsconfig.build.json --watch",
+    "build": "tsc -b tsconfig.build.json && pnpm -r run build",
+    "build:clean": "pnpm run clean && pnpm run build",
+    "langium:generate": "pnpm --filter hearthstone-battlegrounds-dsl-language langium:generate",
+    "langium:watch": "pnpm --filter hearthstone-battlegrounds-dsl-language langium:watch",
+    "test": "pnpm --filter hearthstone-battlegrounds-dsl-language test",
+    "playground:generate": "node ./scripts/generate-playground.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "~20.17.48",
+    "hearthstone-battlegrounds-dsl-cli": "workspace:*",
+    "prettier": "3.8.3",
+    "shx": "~0.4.0",
+    "typescript": "~5.8.3"
+  },
+  "packageManager": "pnpm@10.28.2+sha512.41872f037ad22f7348e3b1debbaf7e867cfd448f2726d9cf74c08f19507c31d2c8e7a11525b983febc2df640b5438dee6023ebb1f84ed43cc2d654d2bc326264"
 }

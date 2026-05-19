@@ -1,15 +1,28 @@
-import { type Module, inject } from 'langium';
-import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
-import { HearthstoneBattlegroundsDslGeneratedModule, HearthstoneBattlegroundsDslGeneratedSharedModule } from './generated/module.js';
-import { HearthstoneBattlegroundsDslValidator, registerValidationChecks } from './hearthstone-battlegrounds-dsl-validator.js';
+import { type Module, inject } from 'langium'
+import {
+  createDefaultModule,
+  createDefaultSharedModule,
+  type DefaultSharedModuleContext,
+  type LangiumServices,
+  type LangiumSharedServices,
+  type PartialLangiumServices,
+} from 'langium/lsp'
+import {
+  HearthstoneBattlegroundsDslGeneratedModule,
+  HearthstoneBattlegroundsDslGeneratedSharedModule,
+} from './generated/module.js'
+import {
+  HearthstoneBattlegroundsDslValidator,
+  registerValidationChecks,
+} from './hearthstone-battlegrounds-dsl-validator.js'
 
 /**
  * Declaration of custom services - add your own service classes here.
  */
 export type HearthstoneBattlegroundsDslAddedServices = {
-    validation: {
-        HearthstoneBattlegroundsDslValidator: HearthstoneBattlegroundsDslValidator
-    }
+  validation: {
+    HearthstoneBattlegroundsDslValidator: HearthstoneBattlegroundsDslValidator
+  }
 }
 
 /**
@@ -23,11 +36,14 @@ export type HearthstoneBattlegroundsDslServices = LangiumServices & HearthstoneB
  * declared custom services. The Langium defaults can be partially specified to override only
  * selected services, while the custom services must be fully specified.
  */
-export const HearthstoneBattlegroundsDslModule: Module<HearthstoneBattlegroundsDslServices, PartialLangiumServices & HearthstoneBattlegroundsDslAddedServices> = {
-    validation: {
-        HearthstoneBattlegroundsDslValidator: () => new HearthstoneBattlegroundsDslValidator()
-    }
-};
+export const HearthstoneBattlegroundsDslModule: Module<
+  HearthstoneBattlegroundsDslServices,
+  PartialLangiumServices & HearthstoneBattlegroundsDslAddedServices
+> = {
+  validation: {
+    HearthstoneBattlegroundsDslValidator: () => new HearthstoneBattlegroundsDslValidator(),
+  },
+}
 
 /**
  * Create the full set of services required by Langium.
@@ -45,24 +61,21 @@ export const HearthstoneBattlegroundsDslModule: Module<HearthstoneBattlegroundsD
  * @returns An object wrapping the shared services and the language-specific services
  */
 export function createHearthstoneBattlegroundsDslServices(context: DefaultSharedModuleContext): {
-    shared: LangiumSharedServices,
-    HearthstoneBattlegroundsDsl: HearthstoneBattlegroundsDslServices
+  shared: LangiumSharedServices
+  HearthstoneBattlegroundsDsl: HearthstoneBattlegroundsDslServices
 } {
-    const shared = inject(
-        createDefaultSharedModule(context),
-        HearthstoneBattlegroundsDslGeneratedSharedModule
-    );
-    const HearthstoneBattlegroundsDsl = inject(
-        createDefaultModule({ shared }),
-        HearthstoneBattlegroundsDslGeneratedModule,
-        HearthstoneBattlegroundsDslModule
-    );
-    shared.ServiceRegistry.register(HearthstoneBattlegroundsDsl);
-    registerValidationChecks(HearthstoneBattlegroundsDsl);
-    if (!context.connection) {
-        // We don't run inside a language server
-        // Therefore, initialize the configuration provider instantly
-        shared.workspace.ConfigurationProvider.initialized({});
-    }
-    return { shared, HearthstoneBattlegroundsDsl };
+  const shared = inject(createDefaultSharedModule(context), HearthstoneBattlegroundsDslGeneratedSharedModule)
+  const HearthstoneBattlegroundsDsl = inject(
+    createDefaultModule({ shared }),
+    HearthstoneBattlegroundsDslGeneratedModule,
+    HearthstoneBattlegroundsDslModule,
+  )
+  shared.ServiceRegistry.register(HearthstoneBattlegroundsDsl)
+  registerValidationChecks(HearthstoneBattlegroundsDsl)
+  if (!context.connection) {
+    // We don't run inside a language server
+    // Therefore, initialize the configuration provider instantly
+    shared.workspace.ConfigurationProvider.initialized({})
+  }
+  return { shared, HearthstoneBattlegroundsDsl }
 }

@@ -1,21 +1,21 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Build hearthstone-battlegrounds-dsl",
-            "command": "pnpm run langium:generate; if ($LASTEXITCODE -eq 0) { pnpm run build }",
-            "type": "shell",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "detail": "Langium: Generate grammar and build the hearthstone-battlegrounds-dsl language",
-            "icon": {
-                "color": "terminal.ansiGreen",
-                "id": "server-process"
-            }
-        }
-    ]
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build hearthstone-battlegrounds-dsl",
+      "command": "pnpm run langium:generate; if ($LASTEXITCODE -eq 0) { pnpm run build }",
+      "type": "shell",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "detail": "Langium: Generate grammar and build the hearthstone-battlegrounds-dsl language",
+      "icon": {
+        "color": "terminal.ansiGreen",
+        "id": "server-process"
+      }
+    }
+  ]
 }

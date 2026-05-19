@@ -4,8 +4,8 @@ Depending on the selection during the project generation you will have one or mo
 Please check the specific projects here:
 
 - [packages/language](./packages/language/README.md) This package is always available and contains the language definition.
-- [packages/cli](./packages/cli/README.md) *Optional* Is only available if you chose to use the command-line interface.
-- [packages/extension](./packages/extension/langium-quickstart.md) *Optional* Contains the VSCode extension if you chose to create it.
+- [packages/cli](./packages/cli/README.md) _Optional_ Is only available if you chose to use the command-line interface.
+- [packages/extension](./packages/extension/langium-quickstart.md) _Optional_ Contains the VSCode extension if you chose to create it.
 
 ## What's in the folder?
 

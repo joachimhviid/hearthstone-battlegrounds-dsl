@@ -1,13 +1,13 @@
-import { startLanguageServer } from 'langium/lsp';
-import { NodeFileSystem } from 'langium/node';
-import { createConnection, ProposedFeatures } from 'vscode-languageserver/node.js';
-import { createHearthstoneBattlegroundsDslServices } from 'hearthstone-battlegrounds-dsl-language';
+import { startLanguageServer } from 'langium/lsp'
+import { NodeFileSystem } from 'langium/node'
+import { createConnection, ProposedFeatures } from 'vscode-languageserver/node.js'
+import { createHearthstoneBattlegroundsDslServices } from 'hearthstone-battlegrounds-dsl-language'
 
 // Create a connection to the client
-const connection = createConnection(ProposedFeatures.all);
+const connection = createConnection(ProposedFeatures.all)
 
 // Inject the shared services and language-specific services
-const { shared } = createHearthstoneBattlegroundsDslServices({ connection, ...NodeFileSystem });
+const { shared } = createHearthstoneBattlegroundsDslServices({ connection, ...NodeFileSystem })
 
 // Start the language server with the shared services
-startLanguageServer(shared);
+startLanguageServer(shared)

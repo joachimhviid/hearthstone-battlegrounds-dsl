@@ -1,61 +1,61 @@
 {
-    "name": "vscode-hearthstone-battlegrounds-dsl",
-    "description": "The extension specific package",
-    "version": "0.0.1",
-    "displayName": "hearthstone-battlegrounds-dsl",
-    "type": "module",
-    "engines": {
-        "vscode": "^1.67.0"
-    },
-    "categories": [
-        "Programming Languages"
-    ],
-    "contributes": {
-        "languages": [
-            {
-                "id": "hearthstone-battlegrounds-dsl",
-                "aliases": [
-                    "Hearthstone Battlegrounds DSL",
-                    "hearthstone-battlegrounds-dsl"
-                ],
-                "extensions": [
-                    ".hsbg"
-                ],
-                "configuration": "./language-configuration.json"
-            }
+  "name": "vscode-hearthstone-battlegrounds-dsl",
+  "description": "The extension specific package",
+  "version": "0.0.1",
+  "displayName": "hearthstone-battlegrounds-dsl",
+  "type": "module",
+  "engines": {
+    "vscode": "^1.67.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "hearthstone-battlegrounds-dsl",
+        "aliases": [
+          "Hearthstone Battlegrounds DSL",
+          "hearthstone-battlegrounds-dsl"
         ],
-        "grammars": [
-            {
-                "language": "hearthstone-battlegrounds-dsl",
-                "scopeName": "source.hearthstone-battlegrounds-dsl",
-                "path": "syntaxes/hearthstone-battlegrounds-dsl.tmLanguage.json"
-            }
-        ]
-    },
-    "activationEvents": [
-        "onLanguage:hearthstone-battlegrounds-dsl"
+        "extensions": [
+          ".hsbg"
+        ],
+        "configuration": "./language-configuration.json"
+      }
     ],
-    "main": "./out/extension/main.cjs",
-    "scripts": {
-        "clean": "shx rm -fr *.tsbuildinfo out syntaxes",
-        "vscode:prepublish": "pnpm run build",
-        "build:prepare": "shx mkdir -p ./syntaxes/ && shx cp -f ../language/syntaxes/hearthstone-battlegrounds-dsl.tmLanguage.json ./syntaxes/hearthstone-battlegrounds-dsl.tmLanguage.json",
-        "build": "pnpm run build:prepare && tsc -b tsconfig.json && node esbuild.mjs",
-        "build:clean": "pnpm run clean && pnpm run build",
-        "watch": "pnpm run build:prepare && concurrently -n tsc,esbuild -c blue,yellow \"tsc -b tsconfig.json --watch\" \"node esbuild.mjs --watch\""
-    },
-    "dependencies": {
-        "hearthstone-battlegrounds-dsl-language": "link:..\\language",
-        "langium": "4.2.3",
-        "vscode-languageclient": "~9.0.1",
-        "vscode-languageserver": "~9.0.1"
-    },
-    "devDependencies": {
-        "@types/vscode": "~1.67.0",
-        "concurrently": "~8.2.1",
-        "esbuild": "~0.25.5"
-    },
-    "vsce": {
-        "dependencies": false
-    }
+    "grammars": [
+      {
+        "language": "hearthstone-battlegrounds-dsl",
+        "scopeName": "source.hearthstone-battlegrounds-dsl",
+        "path": "syntaxes/hearthstone-battlegrounds-dsl.tmLanguage.json"
+      }
+    ]
+  },
+  "activationEvents": [
+    "onLanguage:hearthstone-battlegrounds-dsl"
+  ],
+  "main": "./out/extension/main.cjs",
+  "scripts": {
+    "clean": "shx rm -fr *.tsbuildinfo out syntaxes",
+    "vscode:prepublish": "pnpm run build",
+    "build:prepare": "shx mkdir -p ./syntaxes/ && shx cp -f ../language/syntaxes/hearthstone-battlegrounds-dsl.tmLanguage.json ./syntaxes/hearthstone-battlegrounds-dsl.tmLanguage.json",
+    "build": "pnpm run build:prepare && tsc -b tsconfig.json && node esbuild.mjs",
+    "build:clean": "pnpm run clean && pnpm run build",
+    "watch": "pnpm run build:prepare && concurrently -n tsc,esbuild -c blue,yellow \"tsc -b tsconfig.json --watch\" \"node esbuild.mjs --watch\""
+  },
+  "dependencies": {
+    "hearthstone-battlegrounds-dsl-language": "link:..\\language",
+    "langium": "4.2.3",
+    "vscode-languageclient": "~9.0.1",
+    "vscode-languageserver": "~9.0.1"
+  },
+  "devDependencies": {
+    "@types/vscode": "~1.67.0",
+    "concurrently": "~8.2.1",
+    "esbuild": "~0.25.5"
+  },
+  "vsce": {
+    "dependencies": false
+  }
 }
