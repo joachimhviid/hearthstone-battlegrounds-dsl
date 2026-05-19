@@ -1,0 +1,8 @@
+Minion DefiantShipwright {
+  name "Defiant Shipwright"
+  tier 2
+  attack 2
+  health 5
+  tribes Pirate
+  Whenever this gains attack gain (+0/+1)
+}

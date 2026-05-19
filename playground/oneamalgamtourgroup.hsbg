@@ -1,0 +1,8 @@
+Minion OneAmalgamTourGroup {
+  name "One-Amalgam Tour Group"
+  tier 6
+  attack 6
+  health 7
+  tribes All
+  Whenever you play a minion give friendly tier 1 minions (+2/+1)
+}

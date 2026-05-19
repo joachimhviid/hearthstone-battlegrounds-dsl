@@ -1,0 +1,8 @@
+Minion AccordoTron {
+  name "Accord-o-Tron"
+  tier 3
+  attack 3
+  health 3
+  tribes Mech
+  Start of Turn gain 1 gold
+}

@@ -1,0 +1,8 @@
+Minion DeflectoBot {
+  name "Deflect-o-bot"
+  tier 3
+  attack 3
+  health 2
+  tribes Mech
+  Whenever you summon a Mech gain (+2/+0, DivineShield)
+}

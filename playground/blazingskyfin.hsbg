@@ -1,0 +1,8 @@
+Minion BlazingSkyfin {
+  name "Blazing Skyfin"
+  tier 2
+  attack 2
+  health 4
+  tribes Murloc, Dragon
+  After you trigger a Battlecry gain (+1/+1)
+}

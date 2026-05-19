@@ -78,12 +78,21 @@ MinionStatGainCondition:
 // -------------------------------- ACTIONS
 
 Action:
-    GainStatAction | GrantAttributeAction | SummonAction | DamageAction | GetMinionAction;
+    GainAttributeAction | GrantAttributeAction | SummonAction | DamageAction | GetMinionAction | GainGoldAction;
 
-GainStatAction:
-    'gain' StatModification;
+GainAttributeAction:
+    'gain' '(' modifications+=AttributeModification (',' modifications+=AttributeModification)* ')';
+
+GainGoldAction:
+    'gain' amount=INT 'gold';
 
 GetMinionAction:
+    GetGenericMinion | GetSpecificMinion;
+
+GetSpecificMinion:
+    'get' amount=INT minion=[Minion];
+
+GetGenericMinion:
     'get' amount=INT (random?='random')? subject=Target;
 
 KeywordModification:
@@ -117,16 +126,8 @@ Target:
     (quantifier=TargetQuantifier)?
     (affiliation=Affiliation)?
     (tierFilter=TierFilter)?
-    type=('this' | 'it' | 'minion' | Tribe)
+    type=('this' | 'it' | 'minion' | 'minions' | Tribe)
     (keywordFilter=KeywordFilter)?;
-// ExplicitTarget | DynamicTarget;
-// 'this' | (quantifier=TargetQuantifier)? (affiliation=Affiliation)? (tribe=Tribe)? (keyword=Keyword)?;
-
-// ExplicitTarget:
-//     'this' | 'it' | (affiliation=Affiliation)? target=('minion' | Tribe);
-
-// DynamicTarget:
-//     quantifier=TargetQuantifier (affiliation=Affiliation)? target=('minion' | Tribe);
 
 TierFilter:
     'tier' tier=INT;

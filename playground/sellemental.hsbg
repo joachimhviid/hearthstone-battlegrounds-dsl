@@ -1,0 +1,16 @@
+Minion Sellemental {
+  name "Sellemental"
+  tier 2
+  attack 3
+  health 3
+  tribes Elemental
+  Whenever you sell this get 1 WaterDroplet
+}
+
+Minion token WaterDroplet {
+  name "Water Droplet"
+  tier 1
+  attack 3
+  health 3
+  tribes Elemental
+}

@@ -92,7 +92,7 @@ function generateCardDescription(minion: Minion): string {
                     cardAttributes.push(`Summon ${quantifier} ${action.minion.ref.attack}/${action.minion.ref.health} ${action.minion.ref.minionName}`)
                     break;
                 case 'DamageAction':
-                case 'StatModification':
+                case 'GainAttributeAction':
                 default:
                     break;
             }

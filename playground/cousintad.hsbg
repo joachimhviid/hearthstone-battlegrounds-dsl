@@ -1,0 +1,8 @@
+Minion CousinTad {
+  name "Cousin Tad"
+  tier 3
+  attack 2
+  health 4
+  tribes Murloc
+  End of Turn get 1 Tad
+}
