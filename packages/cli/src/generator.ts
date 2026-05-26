@@ -1,4 +1,4 @@
-import type { Model, Minion, Target } from 'hearthstone-battlegrounds-dsl-language'
+import type { Model, Minion, Target, Effect } from 'hearthstone-battlegrounds-dsl-language'
 import { expandToNode, /*joinToNode,*/ toString } from 'langium/generate'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
@@ -41,6 +41,12 @@ export function generateGdScript(model: Model, filePath: string, destination: st
                 token = ${minion.token}
                 description = "${generateCardDescription(minion)}"
         `.appendNewLineIfNotEmpty()
+    minion.effects.map((effect) => {
+
+      // fileNode.appendTemplateIf(effect.trigger.$type === 'SimpleTrigger')`
+
+      // `
+    })
 
     if (!fs.existsSync(data.destination)) {
       fs.mkdirSync(data.destination, { recursive: true })
@@ -51,6 +57,29 @@ export function generateGdScript(model: Model, filePath: string, destination: st
   })
 
   return generatedFilePaths.join()
+}
+
+function generateEffect(effect: Effect) {
+  if (effect.trigger.$type === 'SimpleTrigger') {
+      switch (effect.trigger.type) {
+        case 'Battlecry':
+        case 'Deathrattle':
+        case 'Rally':
+          // cardAttributes.push(`${effect.trigger.type}:`)
+          break
+        case 'Start of Combat':
+          // cardAttributes.push('Start of Combat:')
+          break
+        case 'End of Turn':
+          // cardAttributes.push('At the end of your turn,')
+          break
+        case 'Start of Turn':
+          // cardAttributes.push('At the start of your turn,')
+          break
+        default:
+          break
+      }
+    }
 }
 
 function generateCardDescription(minion: Minion): string {
@@ -77,9 +106,32 @@ function generateCardDescription(minion: Minion): string {
           break
       }
     } else {
-      cardAttributes.push(effect.trigger.time)
-      // TODO: flesh this out
-      // cardAttributes.push(effect.trigger.condition.description)
+      // EventTrigger: build a readable phrase from time + condition
+      const evt = effect.trigger
+      const time = evt.time
+      const cond = evt.condition
+      let condText = ''
+      switch (cond.$type) {
+        case 'PlayerPlayCondition':
+          condText = `you ${cond.action} ${targetToString(cond.target)}`
+          break
+        case 'PlayerSellCondition':
+          condText = `you sell ${targetToString(cond.target)}`
+          break
+        case 'PlayerTriggerKeywordCondition':
+          condText = `you trigger a ${cond.keyword}`
+          break
+        case 'MinionDamageCondition':
+          condText = `${targetToString(cond.target)} takes damage`
+          break
+        case 'MinionStatGainCondition':
+          condText = `${targetToString(cond.target)} gains ${cond.stat}`
+          break
+        default:
+          condText = ''
+      }
+      if (condText) cardAttributes.push(`${time} ${condText}`)
+      else cardAttributes.push(time)
     }
     effect.actions.map((action) => {
       switch (action.$type) {
@@ -89,25 +141,25 @@ function generateCardDescription(minion: Minion): string {
             throw new Error('Minion reference not found for SummonAction')
           }
           cardAttributes.push(
-            `Summon ${quantifier} ${action.minion.ref.attack}/${action.minion.ref.health} ${action.minion.ref.minionName}`,
+            `summon ${quantifier} ${action.minion.ref.attack}/${action.minion.ref.health} ${action.minion.ref.minionName}`,
           )
           break
         case 'DamageAction':
-          cardAttributes.push(`Deal ${action.amount} damage to ${targetToString(action.target)}`)
+          cardAttributes.push(`deal ${action.amount} damage to ${targetToString(action.target)}`)
           break
         case 'GainGoldAction':
-          cardAttributes.push(`Gain ${action.amount} gold`)
+          cardAttributes.push(`gain ${action.amount} gold`)
           break
         case 'GainAttributeAction':
           action.modifications.map((mod) => {
             switch (mod.$type) {
               case 'KeywordModification':
-                cardAttributes.push(`Gains ${mod.keyword}`)
+                cardAttributes.push(`this gains ${mod.keyword}`)
                 break
               case 'StatModification':
                 const atk = mod.attack ?? 0
                 const hp = mod.health ?? 0
-                cardAttributes.push(`Gains ${atk}/${hp}`)
+                cardAttributes.push(`this gains +${atk}/+${hp}`)
                 break
               default:
                 break
@@ -116,22 +168,22 @@ function generateCardDescription(minion: Minion): string {
           break
         case 'GetGenericMinion':
           cardAttributes.push(
-            `Get ${action.amount} ${action.random ? 'random ' : ''}minion(s) ${targetToString(action.subject)}`,
+            `get ${action.amount} ${action.random ? 'random ' : ''} ${targetToString(action.subject)}`,
           )
           break
         case 'GetSpecificMinion':
           if (!action.minion.ref) throw new Error('Minion reference not found for GetSpecificMinion')
-          cardAttributes.push(`Get ${action.amount} ${action.minion.ref.minionName}`)
+          cardAttributes.push(`get ${action.amount} ${action.minion.ref.minionName}`)
           break
         case 'GrantAttributeAction':
           const targetStr = targetToString(action.target)
           action.modifications.map((mod) => {
             switch (mod.$type) {
               case 'KeywordModification':
-                cardAttributes.push(`Give ${targetStr} ${mod.keyword}`)
+                cardAttributes.push(`give ${targetStr} ${mod.keyword}`)
                 break
               case 'StatModification':
-                cardAttributes.push(`Give ${targetStr} ${mod.attack}/${mod.health}`)
+                cardAttributes.push(`give ${targetStr} +${mod.attack}/+${mod.health}`)
                 break
               default:
                 break
@@ -151,44 +203,38 @@ function targetToString(target: Target): string {
 
   // quantifier
   if (target.quantifier) {
-    if (target.quantifier.all) parts.push('all')
-    else if (target.quantifier.another) parts.push('another')
-    else if (target.quantifier.one) parts.push('one')
+    if (target.quantifier.all) {
+      parts.push('all')
+      if (target.quantifier.excludeSelf) {
+        parts.push('other')
+      }
+    } else if (target.quantifier.another) {
+      parts.push('another')
+    } else if (target.quantifier.one) {
+      parts.push('a')
+    }
   }
 
   // affiliation
   if (target.affiliation) {
-    if (target.affiliation === 'tavern') parts.push('from the tavern')
-    else parts.push(target.affiliation)
+    if (target.affiliation !== 'tavern') parts.push(target.affiliation)
   }
 
-  // type (it, this, minion(s), or tribe)
-  let typeStr = ''
-  if (target.type === 'it' || target.type === 'this') {
-    typeStr = target.type
-  } else if (target.type === 'minion' || target.type === 'minions') {
-    typeStr = target.type
-  } else {
-    // tribe (could be singular or plural)
-    typeStr = `${String(target.type).toLowerCase()}`
-    // make readable
-    if (!typeStr.endsWith('s')) typeStr = `${typeStr} minion`
+  // tier filter
+  if (target.tierFilter) {
+    parts.push(`tier ${target.tierFilter.tier}`)
   }
 
-  if (typeStr) parts.push(typeStr)
+  parts.push(target.type)
+
+  if (target.affiliation && target.affiliation === 'tavern') {
+    parts.push('in the tavern')
+  }
 
   // keyword filter
   if (target.keywordFilter) {
     parts.push(`with ${target.keywordFilter.keyword}`)
   }
 
-  // tier filter
-  if (target.tierFilter) {
-    parts.push(`(tier ${target.tierFilter.tier})`)
-  }
-
-  // assemble
-  // If we used a tavern affiliation we already added 'from the tavern' which reads better at end —
-  // try to produce a compact phrase
-  return parts.join(' ').replace(/\s+from the tavern/, ' from the tavern')
+  return parts.join(' ')
 }

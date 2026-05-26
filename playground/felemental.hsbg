@@ -1,0 +1,8 @@
+Minion Felemental {
+  name "Felemental"
+  tier 3
+  attack 3
+  health 3
+  tribes Elemental, Demon
+  Battlecry give tavern minions (+2/+1)
+}

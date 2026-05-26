@@ -126,7 +126,7 @@ Target:
     (quantifier=TargetQuantifier)?
     (affiliation=Affiliation)?
     (tierFilter=TierFilter)?
-    type=('this' | 'it' | 'minion' | 'minions' | Tribe)
+    type=('this' | 'it' | 'them' | 'minion' | 'minions' | Tribe)
     (keywordFilter=KeywordFilter)?;
 
 TierFilter:

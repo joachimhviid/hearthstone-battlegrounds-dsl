@@ -4,5 +4,5 @@ Minion RabidPanther {
   attack 4
   health 8
   tribes Beast
-  After you play a Beast give friendly Beasts (+3/+3) and deal 1 damage to it
+  After you play a Beast give friendly Beasts (+3/+3) and deal 1 damage to them
 }
