@@ -1,7 +1,9 @@
-import type { Model, Minion, Target, Effect } from 'hearthstone-battlegrounds-dsl-language'
-import { expandToNode, /*joinToNode,*/ toString } from 'langium/generate'
+import type { Model, Minion, Target, Effect, Action, AttributeModification } from 'hearthstone-battlegrounds-dsl-language'
+import { expandToNode, joinToNode, toString } from 'langium/generate'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
+import { constantCase } from 'es-toolkit/string'
+import { match } from 'ts-pattern'
 import { extractDestinationAndName } from './util.js'
 
 export function generateJavaScript(model: Model, filePath: string, destination: string | undefined): string {
@@ -40,13 +42,24 @@ export function generateGdScript(model: Model, filePath: string, destination: st
                 keywords = [${minion.keywords.map((kw) => `Keyword.${kw.toUpperCase()}`).join(', ')}]
                 token = ${minion.token}
                 description = "${generateCardDescription(minion)}"
+                events = {
+                    ${joinToNode(minion.effects, generateEffect, {
+                      skipNewLineAfterLastItem: true,
+                      appendNewLineIfNotEmpty: true,
+                      suffix: ',',
+                    })}
+                }
         `.appendNewLineIfNotEmpty()
-    minion.effects.map((effect) => {
+    // minion.effects.map((effect) => {
+    //   fileNode.appendTemplateIf(effect.trigger.$type === 'SimpleTrigger' && !isKeywordTrigger(effect.trigger.type))`
+    //     events = {
+    //           ${generateEffect(effect)}
+    //     }`
 
-      // fileNode.appendTemplateIf(effect.trigger.$type === 'SimpleTrigger')`
-
-      // `
-    })
+    //   fileNode.appendTemplateIf(effect.trigger.$type === 'SimpleTrigger' && isKeywordTrigger(effect.trigger.type))`
+    //     ${generateEffect(effect)}
+    //     `
+    // })
 
     if (!fs.existsSync(data.destination)) {
       fs.mkdirSync(data.destination, { recursive: true })
@@ -61,25 +74,65 @@ export function generateGdScript(model: Model, filePath: string, destination: st
 
 function generateEffect(effect: Effect) {
   if (effect.trigger.$type === 'SimpleTrigger') {
-      switch (effect.trigger.type) {
-        case 'Battlecry':
-        case 'Deathrattle':
-        case 'Rally':
-          // cardAttributes.push(`${effect.trigger.type}:`)
-          break
-        case 'Start of Combat':
-          // cardAttributes.push('Start of Combat:')
-          break
-        case 'End of Turn':
-          // cardAttributes.push('At the end of your turn,')
-          break
-        case 'Start of Turn':
-          // cardAttributes.push('At the start of your turn,')
-          break
-        default:
-          break
+    return expandToNode`
+    Event.${constantCase(effect.trigger.type)}: func(instance: MinionInstance):
+        ${joinToNode(effect.actions, generateActionHandler)}`
+  }
+  return expandToNode``
+}
+
+function generateActionHandler(action: Action) {
+  return match(action)
+    .with({ $type: 'SummonAction' }, ({ minion, amount }) => {
+      if (!minion.ref) {
+        throw new Error('No minion ref found for SummonAction')
       }
-    }
+      return expandToNode`
+      var summon_ref = load("res://data/${minion.ref.token ? 'tokens' : 'minions'}/${minion.ref.name}.gd").new()
+      for i in ${amount ?? 1}:
+          GameState.summon_minion(MinionInstance.new(summon_ref))`
+    })
+    .with({ $type: 'GainAttributeAction' }, ({ modifications }) => {
+      return expandToNode`
+        ${joinToNode(modifications, generateAttributeModification, {
+          appendNewLineIfNotEmpty: true,
+          skipNewLineAfterLastItem: true,
+        })}`
+    })
+    .with({ $type: 'GrantAttributeAction' }, ({ modifications, target }) => {
+      if (target.type === 'this') {
+        return expandToNode`
+          ${joinToNode(modifications, generateAttributeModification, {
+            appendNewLineIfNotEmpty: true,
+            skipNewLineAfterLastItem: true,
+          })}`
+      }
+      return expandToNode`
+      ${joinToNode(modifications, (modification) => {
+        const t = generateTargetSelector(target)
+        return expandToNode`
+        `
+      }, {
+        appendNewLineIfNotEmpty: true,
+        skipNewLineAfterLastItem: true,
+      })}`
+    })
+    .otherwise(() => expandToNode``)
+}
+
+function generateTargetSelector(target: Target) {
+  match(target).with({ type: 'this' }, () => expandToNode`instance`)
+  return expandToNode``
+}
+
+function generateAttributeModification(modification: AttributeModification) {
+  return match(modification).with({ $type: 'StatModification' }, ({ attack, health }) => {
+    return expandToNode`
+    GameState.give_stats(instance, ${attack}, ${health})`
+  }).with({ $type: 'KeywordModification' }, ({ keyword }) => {
+    return expandToNode`
+    GameState.give_keyword(instance, Keyword.${constantCase(keyword)})`
+  }).exhaustive()
 }
 
 function generateCardDescription(minion: Minion): string {
