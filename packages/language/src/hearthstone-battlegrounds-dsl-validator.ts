@@ -1,5 +1,6 @@
 import type { ValidationAcceptor, ValidationChecks } from 'langium'
-import type { HearthstoneBattlegroundsDslAstType, Minion, Tribe, TribePlural } from './generated/ast.js'
+import type { HearthstoneBattlegroundsDslAstType, Minion, Tribe, TribePlural, Trigger } from './generated/ast.js'
+import { isPlayerActionCondition } from './generated/ast.js'
 import type { HearthstoneBattlegroundsDslServices } from './hearthstone-battlegrounds-dsl-module.js'
 
 /**
@@ -9,7 +10,7 @@ export function registerValidationChecks(services: HearthstoneBattlegroundsDslSe
   const registry = services.validation.ValidationRegistry
   const validator = services.validation.HearthstoneBattlegroundsDslValidator
   const checks: ValidationChecks<HearthstoneBattlegroundsDslAstType> = {
-    Minion: [validator.checkMinionTierRange, validator.checkTribe],
+    Minion: [validator.checkMinionTierRange, validator.checkStats, validator.checkTribe, validator.checkAction],
   }
   registry.register(checks, validator)
 }
@@ -44,6 +45,71 @@ export class HearthstoneBattlegroundsDslValidator {
       accept('error', `"All" cannot be combined with other tribes.`, {
         node: minion,
         property: 'tribes',
+      })
+    }
+  }
+
+  checkAction(minion: Minion, accept: ValidationAcceptor): void {
+    if (minion.effects.length !== 0) {
+      minion.effects.map((effect) => {
+        effect.actions.map((action) => {
+          if (action.$type === 'GainGoldAction') {
+            if (
+              effect.trigger.$type === 'SimpleTrigger' &&
+              !['Start of Turn', 'Battlecry'].includes(effect.trigger.type)
+            ) {
+              accept('warning', `Useless gain gold action. Gold is never usable by player.`, {
+                node: minion,
+                property: 'effects',
+              })
+            }
+          }
+          if (action.$type === 'SummonAction') {
+            if (action.amount && action.amount < 0) {
+              accept('error', `Cannot summon a negative amount.`, {
+                node: minion,
+                property: 'effects',
+              })
+            }
+            if (action.minion.ref) {
+              if (!action.minion.ref.token && isTavernOnlyTrigger(effect.trigger)) {
+                accept('warning', `Summon is not a token. Is this intentional?`, {
+                  node: minion,
+                  property: 'effects',
+                })
+              }
+              if (
+                effect.trigger.$type === 'SimpleTrigger' &&
+                effect.trigger.type === 'Deathrattle' &&
+                action.minion.ref.name === minion.name
+              ) {
+                accept(
+                  'error',
+                  `Infinite loop detected, minion summons itself on death. Try using the Reborn keyword.`,
+                  {
+                    node: minion,
+                    property: 'effects',
+                  },
+                )
+              }
+            }
+          }
+        })
+      })
+    }
+  }
+
+  checkStats(minion: Minion, accept: ValidationAcceptor): void {
+    if (minion.attack < 0) {
+      accept('error', `Minion cannot have negative attack.`, {
+        node: minion,
+        property: 'attack',
+      })
+    }
+    if (minion.health <= 0) {
+      accept('error', `Minion must have more than 0 health.`, {
+        node: minion,
+        property: 'health',
       })
     }
   }
@@ -86,4 +152,17 @@ export function normalizeTribe(tribe: Tribe | TribePlural): NormalizedTribe {
     Undeads: 'Undead',
   }
   return singularMap[tribe] || tribe
+}
+
+function isTavernOnlyTrigger(trigger: Trigger): boolean {
+  if (trigger.$type === 'SimpleTrigger') {
+    if (['Start of Combat', 'Rally'].includes(trigger.type)) {
+      return false
+    }
+  } else {
+    if (!isPlayerActionCondition(trigger)) {
+      return false
+    }
+  }
+  return true
 }
