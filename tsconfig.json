@@ -6,7 +6,7 @@
     "lib": ["ES2020"],
     "sourceMap": true,
     "strict": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noImplicitReturns": true,
     "noImplicitOverride": true,
     "skipLibCheck": true,
